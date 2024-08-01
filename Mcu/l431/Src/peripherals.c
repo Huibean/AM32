@@ -303,7 +303,7 @@ PA10   ------> TIM1_CH3
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.OutputType = LOW_OUTPUT_TYPE;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+    GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
     LL_GPIO_Init(PHASE_A_GPIO_PORT_LOW, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = PHASE_B_GPIO_LOW;
@@ -311,7 +311,7 @@ PA10   ------> TIM1_CH3
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.OutputType = LOW_OUTPUT_TYPE;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+    GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
     LL_GPIO_Init(PHASE_B_GPIO_PORT_LOW, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = PHASE_C_GPIO_LOW;
@@ -319,7 +319,7 @@ PA10   ------> TIM1_CH3
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.OutputType = LOW_OUTPUT_TYPE;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+    GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
     LL_GPIO_Init(PHASE_C_GPIO_PORT_LOW, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = PHASE_A_GPIO_HIGH;
@@ -327,7 +327,7 @@ PA10   ------> TIM1_CH3
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.OutputType = HIGH_OUTPUT_TYPE;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+    GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
     LL_GPIO_Init(PHASE_A_GPIO_PORT_HIGH, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = PHASE_B_GPIO_HIGH;
@@ -335,7 +335,7 @@ PA10   ------> TIM1_CH3
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.OutputType = HIGH_OUTPUT_TYPE;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+    GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
     LL_GPIO_Init(PHASE_B_GPIO_PORT_HIGH, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = PHASE_C_GPIO_HIGH;
@@ -343,7 +343,7 @@ PA10   ------> TIM1_CH3
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.OutputType = HIGH_OUTPUT_TYPE;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-    GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
+    GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
     LL_GPIO_Init(PHASE_C_GPIO_PORT_HIGH, &GPIO_InitStruct);
 
     //  NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn, 2);
