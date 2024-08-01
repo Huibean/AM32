@@ -32,6 +32,7 @@ extern void transfercomplete();
 extern void PeriodElapsedCallback();
 extern void interruptRoutine();
 extern void tenKhzRoutine();
+extern void processDshot();
 
 
 extern char send_telemetry;
@@ -231,6 +232,7 @@ void DMA1_Channel5_IRQHandler(void)
 	    LL_DMA_ClearFlag_GI5(DMA1);
 	    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_5);
 	    transfercomplete();
+      EXTI->SWIER1 |= LL_EXTI_LINE_15;
 	    return;
 	  }
 	  else if(LL_DMA_IsActiveFlag_TE5(DMA1) == 1)
@@ -288,6 +290,12 @@ void COMP_IRQHandler(void)
 	    /* Call interruption treatment function */
 	    interruptRoutine();
 	  }
+}
+
+void EXTI15_10_IRQHandler(void)
+{
+    LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_15);
+    processDshot();
 }
 
 #endif // BOOTLOADER
