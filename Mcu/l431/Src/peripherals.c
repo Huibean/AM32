@@ -11,7 +11,6 @@
 
 #include "ADC.h"
 #include "serial_telemetry.h"
-#include "targets.h"
 
 void initCorePeripherals(void)
 {
@@ -25,7 +24,12 @@ void initCorePeripherals(void)
     MX_DMA_Init();
     MX_TIM1_Init();
     MX_TIM2_Init();
+#ifdef USE_COMP_1
     MX_COMP1_Init();
+#endif
+#ifdef USE_COMP_2
+    MX_COMP2_Init();
+#endif
     MX_TIM16_Init();
     MX_TIM6_Init();
     MX_TIM7_Init();

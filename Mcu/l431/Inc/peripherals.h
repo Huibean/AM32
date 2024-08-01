@@ -11,6 +11,7 @@
 #endif /* PERIPHERALS_H_ */
 
 #include "main.h"
+#include "targets.h"
 
 #define INTERVAL_TIMER_COUNT (INTERVAL_TIMER->CNT)
 #define RELOAD_WATCHDOG_COUNTER() (LL_IWDG_ReloadCounter(IWDG))
@@ -31,7 +32,12 @@ void SystemClock_Config(void);
 void MX_GPIO_Init(void);
 void MX_DMA_Init(void);
 // static void MX_ADC_Init(void);
+#ifdef USE_COMP_1
 void MX_COMP1_Init(void);
+#endif
+#ifdef USE_COMP_2
+void MX_COMP2_Init(void);
+#endif
 void MX_TIM1_Init(void);
 void MX_TIM2_Init(void);
 void MX_IWDG_Init(void);
