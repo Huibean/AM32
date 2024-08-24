@@ -459,7 +459,7 @@ char send_telemetry = 0;
 char telemetry_done = 0;
 char prop_brake_active = 0;
 
-uint8_t eepromBuffer[176] = { 0 };
+uint8_t eepromBuffer[184] = { 0 };
 
 char dshot_telemetry = 0;
 
@@ -631,7 +631,7 @@ float doPidCalculations(struct fastPID* pidnow, int actual, int target)
 
 void loadEEpromSettings()
 {
-    read_flash_bin(eepromBuffer, eeprom_address, 176);
+    read_flash_bin(eepromBuffer, eeprom_address, sizeof(eepromBuffer));
 
     if (eepromBuffer[17] == 0x01) {
         dir_reversed = 1;
@@ -872,7 +872,7 @@ void saveEEpromSettings()
         eepromBuffer[22] = 0x00;
     }
     eepromBuffer[23] = advance_level;
-    save_flash_nolib(eepromBuffer, 176, eeprom_address);
+    save_flash_nolib(eepromBuffer, sizeof(eepromBuffer), eeprom_address);
 }
 
 uint16_t getSmoothedCurrent()
