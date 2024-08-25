@@ -42,6 +42,9 @@ _estack = ORIGIN(RAM) + LENGTH(RAM); /* end of "RAM" Ram type memory */
 _Min_Heap_Size = 0x200; /* required amount of heap */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
+/* location of flash update region for DroneCAN fw update */
+_flash_update = ORIGIN(FLASH_UPDATE);
+
 /* Memories definition */
 MEMORY
 {
@@ -50,6 +53,7 @@ MEMORY
  EEPROM        (rx)  : ORIGIN = 0x0800f800, LENGTH = 2K
  FLASH_VERSION (rx)  : ORIGIN = ORIGIN(EEPROM) - 48, LENGTH = 16
  FILE_NAME     (rx)  : ORIGIN = ORIGIN(EEPROM) - 32, LENGTH = 32
+ FLASH_UPDATE  (rx)  : ORIGIN = 0x08010000, LENGTH = 57K /* for DroneCAN fw update */
 }
 
 /* Sections */
@@ -79,6 +83,16 @@ SECTIONS
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
   } >FLASH
+
+  .ramfunc :
+  {
+  . = ALIGN(4);
+  _sramfunc = .;       /* Start of .ramfunc section */
+  *(.ramfunc)          /* All .ramfunc sections from C files */
+  *(.ramfunc.*)        /* All .ramfunc.* sections (e.g., C++ files) */
+  . = ALIGN(4);
+  _eramfunc = .;       /* End of .ramfunc section */
+  } >RAM AT> FLASH
 
   /* Constant data into "FLASH" Rom type memory */
   .rodata :
@@ -157,9 +171,6 @@ SECTIONS
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
-    *(.RamFunc)        /* .RamFunc sections */
-    *(.RamFunc*)       /* .RamFunc* sections */
-
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
 
@@ -202,3 +213,6 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
+
+PROVIDE(_sramfunc = LOADADDR(.ramfunc));
+PROVIDE(_eramfunc = LOADADDR(.ramfunc) + SIZEOF(.ramfunc));

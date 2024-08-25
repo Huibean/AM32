@@ -89,6 +89,7 @@
   */
 
 #include "stm32l4xx.h"
+#include <string.h>
 
 /**
   * @}
@@ -194,6 +195,10 @@
   * @retval None
   */
 
+extern uint32_t _sramfunc;
+extern uint32_t _eramfunc;
+extern uint32_t _etext;
+
 void SystemInit(void)
 {
 #if defined(USER_VECT_TAB_ADDRESS)
@@ -224,6 +229,9 @@ void SystemInit(void)
 
   /* Disable all interrupts */
   RCC->CIER = 0x00000000U;
+
+  // copy RAM functions into RAM
+  memcpy((void*)&_sramfunc, (const void*)&_etext, ((uint32_t)&_eramfunc) - (uint32_t)(&_sramfunc));
 }
 
 /**
