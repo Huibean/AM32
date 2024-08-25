@@ -8,6 +8,7 @@
 
 #include "eeprom.h"
 #include <string.h>
+#include <targets.h>
 
 #define page_size 0x800                   // 2 kb for l431
 uint32_t FLASH_FKEY1 =0x45670123;
@@ -84,6 +85,11 @@ void save_flash_nolib(uint8_t *data, int length, uint32_t add){
     SET_BIT(flash->CR, FLASH_CR_LOCK);
 }
 
+void read_flash_bin(uint8_t*  data , uint32_t add, int out_buff_len) {
+    memcpy_ram(data, (const void*)add, out_buff_len);
+}
+
+#ifdef DRONECAN_SUPPORT
 /*
   pointer to the start of application flash
  */
@@ -96,6 +102,11 @@ extern uint32_t g_pfnVectors[2];
 __attribute__((section(".ramfunc")))
 void flash_upgrade(const uint8_t *data, uint32_t length)
 {
+    /*
+      disable interrupts while flashing. The interrupt handlers are in
+      flash, so one being called after an erase can trigger a
+      hardfault
+     */
     __disable_irq();
 
     uint32_t dest_add = (uint32_t)&g_pfnVectors[0];
@@ -103,6 +114,10 @@ void flash_upgrade(const uint8_t *data, uint32_t length)
     // round up to multiple of 8
     length = (length+7U) & ~7U;
     while (length > 0) {
+	// pat the watchdog in case flashing takes more than the
+	// watchdog timeout
+	LL_IWDG_ReloadCounter(IWDG);
+
 	const uint32_t chunk = length>256?256:length;
 	save_flash_nolib((uint8_t *)data, chunk, dest_add);
 	length -= chunk;
@@ -114,9 +129,4 @@ void flash_upgrade(const uint8_t *data, uint32_t length)
     // reboot to start new fw
     NVIC_SystemReset();
 }
-
-
-
-void read_flash_bin(uint8_t*  data , uint32_t add, int out_buff_len) {
-    memcpy_ram(data, (const void*)add, out_buff_len);
-}
+#endif // DRONECAN_SUPPORT
