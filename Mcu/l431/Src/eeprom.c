@@ -89,7 +89,7 @@ void read_flash_bin(uint8_t*  data , uint32_t add, int out_buff_len) {
     memcpy_ram(data, (const void*)add, out_buff_len);
 }
 
-#ifdef DRONECAN_SUPPORT
+#if DRONECAN_SUPPORT
 /*
   pointer to the start of application flash
  */

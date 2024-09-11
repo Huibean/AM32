@@ -196,7 +196,7 @@
   * @retval None
   */
 
-#ifdef DRONECAN_SUPPORT
+#if DRONECAN_SUPPORT
 /*
   location of ram functions
  */
@@ -236,7 +236,7 @@ void SystemInit(void)
   /* Disable all interrupts */
   RCC->CIER = 0x00000000U;
 
-#ifdef DRONECAN_SUPPORT
+#if DRONECAN_SUPPORT
   // copy RAM functions into RAM
   memcpy((void*)&_sramfunc, (const void*)&_etext, ((uint32_t)&_eramfunc) - (uint32_t)(&_sramfunc));
 #endif
