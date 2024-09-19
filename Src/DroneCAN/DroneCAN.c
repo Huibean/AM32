@@ -69,6 +69,7 @@ static struct
 enum VarType {
     T_BOOL = 0,
     T_UINT8,
+    T_UINT16,
 };
 
 static void can_printf(const char *fmt, ...);
@@ -85,6 +86,7 @@ extern char dir_reversed;
 extern char bi_direction;
 extern char advance_level;
 extern char motor_poles;
+extern uint16_t motor_kv;
 extern char VARIABLE_PWM;
 extern char use_sin_start;
 extern char comp_pwm;
@@ -109,6 +111,7 @@ static struct parameter {
     { "CAN_NODE",               T_UINT8, 0, 127, &settings.can_node, 176},
     { "ESC_INDEX",              T_UINT8, 0, 32,  &settings.esc_index, 177},
     { "DIR_REVERSED",           T_BOOL,  0, 1,   &dir_reversed, 0 },
+    { "MOTOR_KV",               T_UINT16,0, 10220, &motor_kv, 26},
     { "BI_DIRECTIONAL",         T_BOOL,  0, 1,   &bi_direction, 0 },
     { "MOTOR_POLES",            T_UINT8, 0, 64,  &motor_poles, 27 },
     { "REQUIRE_ARMING",         T_BOOL,  0, 1,   &settings.require_arming, 178 },
@@ -263,6 +266,14 @@ static void handle_param_GetSet(CanardInstance* ins, CanardRxTransfer* transfer)
 		eepromBuffer[p->eeprom_index] = *(uint8_t *)p->ptr;
 	    }
             break;
+	case T_UINT16:
+	    *(uint16_t *)p->ptr = req.value.integer_value;
+	    if (p->eeprom_index != 0) {
+            if (p->eeprom_index == 26) {
+                eepromBuffer[26] = (uint8_t)((*(uint16_t *)p->ptr - 20) / 40);
+            }
+	    }
+            break;
 	case T_BOOL:
 	    *(uint8_t *)p->ptr = req.value.boolean_value?1:0;
 	    if (p->eeprom_index != 0) {
@@ -288,6 +299,10 @@ static void handle_param_GetSet(CanardInstance* ins, CanardRxTransfer* transfer)
 	case T_UINT8:
 	    pkt.value.union_tag = UAVCAN_PROTOCOL_PARAM_VALUE_INTEGER_VALUE;
 	    pkt.value.integer_value = *(uint8_t *)p->ptr;
+            break;
+	case T_UINT16:
+	    pkt.value.union_tag = UAVCAN_PROTOCOL_PARAM_VALUE_INTEGER_VALUE;
+	    pkt.value.integer_value = *(uint16_t *)p->ptr;
             break;
 	case T_BOOL:
 	    pkt.value.union_tag = UAVCAN_PROTOCOL_PARAM_VALUE_BOOLEAN_VALUE;
