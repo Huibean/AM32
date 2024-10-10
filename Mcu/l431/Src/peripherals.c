@@ -12,6 +12,7 @@
 #include "ADC.h"
 #include "serial_telemetry.h"
 #include "targets.h"
+#include "WS2812.h"
 
 extern char bemf_timeout;
 
@@ -690,6 +691,7 @@ void enableCorePeripherals()
 #endif
 
 #ifdef USE_LED_STRIP
+    WS2812_Init();
     send_LED_RGB(255, 0, 0);
 #endif
 
