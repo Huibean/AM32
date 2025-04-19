@@ -1972,7 +1972,12 @@ if(zero_crosses < 5){
             degrees_celsius = converted_degrees;
             battery_voltage = ((7 * battery_voltage) + ((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100)) >> 3;
             smoothed_raw_current = getSmoothedCurrent();
+#if defined(CURRENT_LINEAR_SLOPE) && defined(CURRENT_LINEAR_INTERCEPT)
+            actual_current = (((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP) * CURRENT_LINEAR_SLOPE) + CURRENT_LINEAR_INTERCEPT;
+#else
             actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+#endif
+
             if (actual_current < 0) {
                 actual_current = 0;
             }
