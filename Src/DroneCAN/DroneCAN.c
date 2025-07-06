@@ -167,6 +167,7 @@ static const struct parameter {
         { "DRAG_BRAKE_STRENGTH",    T_UINT8, 1, 10,  10, &eepromBuffer.drag_brake_strength},
         { "INPUT_SIGNAL_TYPE",      T_UINT8, 0, 5,   5, &eepromBuffer.input_type},
         { "INPUT_FILTER_HZ",        T_UINT8, 0, 100, 0, &eepromBuffer.can.filter_hz},
+        { "THR_MAX",                T_UINT8, 0, 100, 100, &eepromBuffer.can.thrust_max},
 #ifdef CAN_TERM_PIN
         { "CAN_TERM_ENABLE",        T_BOOL,  0, 1,   0, &eepromBuffer.can.term_enable},
 #endif
@@ -621,6 +622,24 @@ static void handle_RawCommand(CanardInstance *ins, CanardRxTransfer *transfer)
     // are for reverse throttle
     const int16_t input_can = cmd.cmd.data[(unsigned)eepromBuffer.can.esc_index];
 
+    // Apply thrust_max limit if configured (value between 1-99)
+    int16_t limited_input_can = input_can;
+    if (eepromBuffer.can.thrust_max > 0 && eepromBuffer.can.thrust_max < 100) {
+        if (eepromBuffer.bi_direction) {
+            // For bidirectional mode, limit in both directions
+            if (limited_input_can > 0) {
+                limited_input_can = (limited_input_can * eepromBuffer.can.thrust_max) / 100;
+            } else if (limited_input_can < 0) {
+                limited_input_can = (limited_input_can * eepromBuffer.can.thrust_max) / 100;
+            }
+        } else {
+            // For unidirectional mode, only limit positive values
+            if (limited_input_can > 0) {
+                limited_input_can = (limited_input_can * eepromBuffer.can.thrust_max) / 100;
+            }
+        }
+    }
+
     /*
       we need to map onto the AM32 expected range, which is a 11 bit number, where:
       0: off
@@ -628,17 +647,17 @@ static void handle_RawCommand(CanardInstance *ins, CanardRxTransfer *transfer)
       48-2047: throttle
     */
     uint16_t this_input = 0;
-    if (input_can == 0) {
+    if (limited_input_can == 0) {
         this_input = 0;
     } else if (eepromBuffer.bi_direction) {
-        const float scaled_value = input_can * (1000.0 / 8192);
+        const float scaled_value = limited_input_can * (1000.0 / 8192);
         if (scaled_value >= 0) {
             this_input = (uint16_t)(1047 + scaled_value);
         } else {
             this_input = (uint16_t)(47 + scaled_value * -1);
         }
-    } else if (input_can > 0) {
-        const float scaled_value = input_can * (2000.0 / 8192);
+    } else if (limited_input_can > 0) {
+        const float scaled_value = limited_input_can * (2000.0 / 8192);
         this_input = (uint16_t)(47 + scaled_value);
     }
 
